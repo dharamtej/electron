@@ -21,7 +21,7 @@ function createWindow() {
     }
   });
 
-  Menu.setApplicationMenu(null);
+  //Menu.setApplicationMenu(null);
 
   const printurl = 'https://ecw.excelindia.com/svkmprinttest/PrintDashboard';
   win.loadURL(printurl);
