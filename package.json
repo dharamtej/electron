@@ -1,0 +1,76 @@
+{
+  "name": "print",
+  "version": "1.0.0",
+  "description": "SVKM Print Application",
+  "main": "main.js",
+  "author": "Excel India Pvt Ltd",
+  "license": "ISC",
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME"
+  },
+
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+
+  "keywords": [
+    "electron",
+    "react",
+    "printing",
+    "desktop-app",
+    "exam"
+  ],
+
+  "devDependencies": {
+    "@types/electron": "^1.4.38",
+    "electron": "^39.2.7",
+    "electron-builder": "^26.4.0"
+  },
+
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+
+  "build": {
+    "appId": "com.excelindia.QuesmatrixPrint",
+    "productName": "Quesmatrix Print",
+
+    "directories": {
+      "output": "dist"
+    },
+
+    "files": [
+      "main.js",
+      "preload.js",
+      "my-app/build/**/*",
+      "ExcelAssess.OfflinePrintExams.UI-main/build/**/*",
+      "package.json"
+    ],
+
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "YOUR_GITHUB_USERNAME",
+        "repo": "YOUR_REPO_NAME"
+      }
+    ],
+
+    "win": {
+      "target": "nsis",
+      "icon": "assets/svkm.ico"
+    },
+
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Quesmatrix Print"
+    }
+  }
+}
