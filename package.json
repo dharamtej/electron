@@ -1,6 +1,6 @@
 {
   "name": "quesmatrix-print-application",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "SVKM Print Application",
   "main": "main.js",
   "author": "Excel India Pvt Ltd",
@@ -10,14 +10,16 @@
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps"
   },
-  "repository": "https://github.com/dharamtej/electron",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dharamtej/electron"
+  },
   "publish": {
     "provider": "github",
     "releaseType": "release"
   },
   "keywords": [
     "electron",
-    "react",
     "printing",
     "desktop-app",
     "exam"

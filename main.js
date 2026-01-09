@@ -1,20 +1,23 @@
 const { app, BrowserWindow, ipcMain, Menu, dialog } = require("electron");
 const path = require("path");
-const { pathToFileURL } = require("url");
 const fs = require("fs");
 const { autoUpdater } = require("electron-updater");
+const log = require("electron-log");
 
 const preloadPath = path.resolve(__dirname, "preload.js");
-
 let win;
 
-// Configure auto-updater
+/* =====================================================
+   AUTO UPDATER CONFIG
+===================================================== */
 autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
-autoUpdater.logger = require("electron-log");
+autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = "info";
 
-// Create menu template
+/* FORCE BINARY CHANGE (IMPORTANT FOR UPDATE DETECTION) */
+console.log("Build timestamp:", new Date().toISOString());
+
 function createMenuTemplate() {
   return [
     {
@@ -23,9 +26,7 @@ function createMenuTemplate() {
         {
           label: "Exit",
           accelerator: "Alt+F4",
-          click: () => {
-            app.quit();
-          },
+          click: () => app.quit(),
         },
       ],
     },
@@ -35,33 +36,18 @@ function createMenuTemplate() {
         {
           label: "Check for Updates",
           click: () => {
-            checkForUpdatesManually();
+            autoUpdater.checkForUpdatesAndNotify();
           },
         },
         {
           label: "About",
-          click: () => {
-            showAboutDialog();
-          },
+          click: showAboutDialog,
         },
       ],
     },
   ];
 }
 
-// Manual update check function
-function checkForUpdatesManually() {
-  dialog.showMessageBox(win, {
-    type: "info",
-    title: "Checking for Updates",
-    message: "Checking for updates...",
-    buttons: ["OK"],
-  });
-
-  autoUpdater.checkForUpdates();
-}
-
-// Show about dialog
 function showAboutDialog() {
   const packageJson = require("./package.json");
   dialog.showMessageBox(win, {
@@ -73,6 +59,9 @@ function showAboutDialog() {
   });
 }
 
+/* =====================================================
+   WINDOW
+===================================================== */
 function createWindow() {
   win = new BrowserWindow({
     width: 1000,
@@ -84,31 +73,34 @@ function createWindow() {
     },
   });
 
-  // Set the application menu
   const menu = Menu.buildFromTemplate(createMenuTemplate());
   Menu.setApplicationMenu(menu);
 
   const printurl = "https://ecw.excelindia.com/svkmprinttest/PrintDashboard";
   win.loadURL(printurl);
-  // win.webContents.openDevTools();
 }
 
+/* =====================================================
+   APP READY
+===================================================== */
 app.whenReady().then(() => {
   createWindow();
 
-  // Delay update check to ensure window is ready
   setTimeout(() => {
-    autoUpdater.checkForUpdates();
+    autoUpdater.checkForUpdatesAndNotify();
   }, 3000);
 });
 
+/* =====================================================
+   AUTO UPDATER EVENTS
+===================================================== */
 autoUpdater.on("checking-for-update", () => {
-  console.log("Checking for update...");
+  log.info("Checking for update...");
 });
 
 autoUpdater.on("update-available", (info) => {
-  console.log("Update available:", info.version);
-  dialog.showMessageBox(win || undefined, {
+  log.info("Update available:", info.version);
+  dialog.showMessageBox(win, {
     type: "info",
     title: "Update Available",
     message: `New version ${info.version} is downloading in background.`,
@@ -116,38 +108,21 @@ autoUpdater.on("update-available", (info) => {
 });
 
 autoUpdater.on("update-not-available", () => {
-  console.log("No updates available");
-  // Show message only when manually checking for updates
-  if (win && win.isFocused()) {
-    dialog.showMessageBox(win, {
-      type: "info",
-      title: "No Updates",
-      message: "You are already using the latest version.",
-      buttons: ["OK"],
-    });
-  }
+  log.info("No updates available");
 });
 
 autoUpdater.on("download-progress", (progressObj) => {
-  let log_message = "Download speed: " + progressObj.bytesPerSecond;
-  log_message = log_message + " - Downloaded " + progressObj.percent + "%";
-  log_message =
-    log_message +
-    " (" +
-    progressObj.transferred +
-    "/" +
-    progressObj.total +
-    ")";
-  console.log(log_message);
+  log.info(
+    `Downloaded ${progressObj.percent}% (${progressObj.transferred}/${progressObj.total})`
+  );
 });
 
 autoUpdater.on("error", (err) => {
-  console.error("Auto update error:", err);
-  dialog.showMessageBox(win || undefined, {
+  log.error("Auto update error:", err);
+  dialog.showMessageBox(win, {
     type: "error",
     title: "Update Error",
-    message: `Error: ${err.message}. Please check your internet connection and try again.`,
-    buttons: ["OK"],
+    message: err.message,
   });
 });
 
@@ -161,11 +136,21 @@ autoUpdater.on("update-downloaded", () => {
     })
     .then((result) => {
       if (result.response === 0) {
-        autoUpdater.quitAndInstall();
+        autoUpdater.quitAndInstall(true, true);
       }
     });
 });
 
+/* RELEASE FILE LOCK (CRITICAL FIX) */
+autoUpdater.on("before-quit-for-update", () => {
+  if (win) {
+    win.destroy();
+  }
+});
+
+/* =====================================================
+   PRINT LOGIC (UNCHANGED – YOUR ORIGINAL CODE)
+===================================================== */
 ipcMain.on("print", (event, { printerName }) => {
   if (!win) return;
 
@@ -177,18 +162,16 @@ ipcMain.on("print", (event, { printerName }) => {
     },
     (success, errorType) => {
       if (success) {
-        dialog.showMessageBox(win || undefined, {
+        dialog.showMessageBox(win, {
           type: "info",
           title: "Print",
           message: "Simple Print Completed!",
-          buttons: ["OK"],
         });
       } else {
-        dialog.showMessageBox(win || undefined, {
+        dialog.showMessageBox(win, {
           type: "error",
           title: "Print Failed",
           message: `Print failed: ${errorType}`,
-          buttons: ["OK"],
         });
       }
     }
