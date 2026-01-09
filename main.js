@@ -41,7 +41,7 @@ autoUpdater.on('checking-for-update', () => {
 });
 
 autoUpdater.on('update-available', () => {
-  dialog.showMessageBox(win, {
+dialog.showMessageBox(win || undefined, {
     type: 'info',
     title: 'Update Available',
     message: 'A new version is downloading in background.'
@@ -83,14 +83,14 @@ ipcMain.on('print', (event, { printerName }) => {
     },
     (success, errorType) => {
       if (success) {
-        dialog.showMessageBox(win, {
+      dialog.showMessageBox(win || undefined, {
           type: 'info',
           title: 'Print',
           message: 'Simple Print Completed!',
           buttons: ['OK']
         });
       } else {
-        dialog.showMessageBox(win, {
+        dialog.showMessageBox(win || undefined, {
           type: 'error',
           title: 'Print Failed',
           message: `Print failed: ${errorType}`,
