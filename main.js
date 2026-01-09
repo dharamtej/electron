@@ -8,6 +8,8 @@ const preloadPath = path.resolve(__dirname, 'preload.js');
 
 let win;
 
+autoUpdater.autoDownload = true;
+autoUpdater.autoInstallOnAppQuit = true;
 function createWindow() {
   win = new BrowserWindow({
     width: 1000,
@@ -31,7 +33,7 @@ app.whenReady().then(() => {
   createWindow();
 
   // Check for updates on app start
-  autoUpdater.checkForUpdatesAndNotify();
+  autoUpdater.checkForUpdates();
 });
 
 autoUpdater.on('checking-for-update', () => {
