@@ -23,8 +23,6 @@ function createWindow() {
 
   const printurl = 'https://ecw.excelindia.com/svkmprinttest/PrintDashboard';
   win.loadURL(printurl);
-
-  // Optional
   // win.webContents.openDevTools();
 }
 
