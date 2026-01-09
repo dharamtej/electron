@@ -10,13 +10,11 @@
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps"
   },
-
-    "repository":  "https://github.com/dharamtej/electron",
-    "publish": {
-      "provider": "github",
-      "releaseType": "release"
+  "repository": "https://github.com/dharamtej/electron",
+  "publish": {
+    "provider": "github",
+    "releaseType": "release"
   },
-
   "keywords": [
     "electron",
     "react",
@@ -24,25 +22,21 @@
     "desktop-app",
     "exam"
   ],
-
   "devDependencies": {
     "@types/electron": "^1.4.38",
     "electron": "^39.2.7",
     "electron-builder": "^26.4.0"
   },
-
   "dependencies": {
-    "electron-updater": "^6.3.9"
+    "electron-updater": "^6.3.9",
+    "electron-log": "^5.0.1"
   },
-
   "build": {
     "appId": "com.excelindia.QuesmatrixPrint",
     "productName": "Quesmatrix Print",
-
     "directories": {
       "output": "dist"
     },
-
     "files": [
       "main.js",
       "preload.js",
@@ -50,21 +44,17 @@
       "ExcelAssess.OfflinePrintExams.UI-main/build/**/*",
       "package.json"
     ],
-
     "publish": [
       {
         "provider": "github",
         "owner": "dharamtej",
-        "repo": "electron",
-        "private": true
+        "repo": "electron"
       }
     ],
-
     "win": {
       "target": "nsis",
       "icon": "assets/svkm.ico"
     },
-
     "nsis": {
       "oneClick": false,
       "perMachine": true,
